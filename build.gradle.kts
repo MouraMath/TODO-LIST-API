@@ -25,20 +25,53 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+
+
+
+    // GraphQL
+    implementation("org.springframework.boot:spring-boot-starter-graphql")
+
+
+    // implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+
+    // AWS DynamoDB
+    implementation("software.amazon.awssdk:dynamodb-enhanced:2.21.5")
+    implementation("io.github.boostchicken:spring-data-dynamodb:5.2.5")
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+
+    // Lombok
     compileOnly("org.projectlombok:lombok")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")
+
+    //DevTools
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+
+    //Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.graphql:spring-graphql-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.testcontainers:dynamodb:1.19.1")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// Configuração para melhorar performance do build
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:unchecked")
+    options.isDeprecation = true
 }
