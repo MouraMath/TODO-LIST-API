@@ -1,33 +1,44 @@
 package com.mouramath.todolistapi.domain.entity;
 
 
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+
+import java.util.List;
+
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamoDbBean
+@DynamoDBTable(tableName = "Users")
 public class User {
 
-    private String name, password, createdAt, updatedAt, email; //TODO refinar tipo email
+    @DynamoDBHashKey
+    private String id;
 
-    @DynamoDbPartitionKey
-    public String getEmail(){
-        return email;
-    }
+    @DynamoDBAttribute
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "usernameIndex")
+    private String username;
+
+    @DynamoDBAttribute
+    private String password;
+
+    @DynamoDBAttribute
+    private String email; //TODO revisar tipo email
+
+    @DynamoDBAttribute
+    private String fullName;
+
+    @DynamoDBAttribute
+    private List<String> roles;
 
 }
 
-/*
- * Uso o email como chave de partição (partition key) porque:
- * 1. É naturalmente único para cada usuário
- * 2. É o identificador principal usado no login
- * 3. Distribui uniformemente os dados (melhor que IDs sequenciais)
- * Complexidade de acesso: O(1) para buscas por email
+/** roles
+ * Uso lista de strings para roles em vez de enum para permitir mais flexibilidade.
+ * Isso facilita adicionar novas roles no futuro sem alterar o modelo.
  */

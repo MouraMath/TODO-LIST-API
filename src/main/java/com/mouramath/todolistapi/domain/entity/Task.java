@@ -1,72 +1,96 @@
 package com.mouramath.todolistapi.domain.entity;
 
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConvertedEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamoDbBean
+@DynamoDBTable(tableName = "Tasks")
 
-public class Todo {
+public class Task {
 
-    private String id, userId, title, description, created_at, updated_at;
-    private Boolean completed; //TODO conferir backlog, processos, completed
-    private List<String> tags;
+    @DynamoDBHashKey
+    private String id;
 
-    @DynamoDbPartitionKey
-    public String getUserId() {
-        return id;
+    @DynamoDBAttribute
+    private String userId;
+
+    @DynamoDBAttribute
+    private String title;
+
+    @DynamoDBAttribute
+    private String description;
+
+    @DynamoDBAttribute
+    private Set<String> tags;
+
+    @DynamoDBTypeConvertedEnum
+    @DynamoDBAttribute
+    private TaskStatus status;
+
+    @DynamoDBAttribute
+    private boolean completed;
+
+    @DynamoDBAttribute
+    private LocalDateTime created_at;
+
+    @DynamoDBAttribute
+    private LocalDateTime updated_at;
+
+    @DynamoDBAttribute
+    private LocalDateTime completedAt;
+
+
+    public void updateStatus(TaskStatus newStatus){
+        this.status = newStatus;
+        this.completed = TaskStatus.isCompleted(); //TODO conferir isCompleted
+        this.updated_at = LocalDateTime.now();
+
+        if(newStatus == TaskStatus.COMPLETED && completedAt == null){
+            this.completedAt = LocalDateTime.now();
+        } else if(newStatus != TaskStatus.COMPLETED){
+            this.completedAt = null;
+        }
+
     }
-
-    @DynamoDbSortKey
-    public String getId() {
-        return id;
-    }
-
-    @DynamoDbSecondaryPartitionKey(indexNames = {"CompletedIndex"})
-    public Boolean getCompleted() {
-        return completed;
-    }
-
-
-
-
 
 }
 
-/*
- * Uso o userId como chave de partição (partition key) porque:
- * 1. Agrupa todas as tarefas de um usuário na mesma partição física
- * 2. Permite operações eficientes como "listar todas as tarefas do usuário"
- * 3. Distribui a carga entre partições baseado nos usuários
- * Complexidade: O(1) para acessar a partição do usuário
+
+/**   TaskStatus status
+ * Uso o enum para representar o estado detalhado da tarefa.
+ * Isso permite mais granularidade na representação do fluxo de trabalho.
  */
 
-/*
- * Uso o id como chave de ordenação (sort key) porque:
- * 1. Permite identificar unicamente uma tarefa dentro da partição do usuário
- * 2. Facilita a ordenação e paginação de tarefas
- * 3. Possibilita consultas de intervalo (range queries)
- *
- * Complexidade: O(log n) para buscar dentro de uma partição,
- * onde n é o número de tarefas do usuário
+/** completed
+ * Mantenho o campo completed para consultas rápidas.
+ * Aproveito a indexação O(1) em vez de traduzir a partir do enum em cada consulta.
  */
 
-/*
- * Defino um índice secundário no campo 'completed' para:
- * 1. Permitir consultas eficientes por status (tarefas concluídas/pendentes)
- * 2. Evitar operações de scan completo que teriam performance O(n)
+/** tags
+ * Uso HashSet para tags pois:
+ * 1. Garante unicidade (não faz sentido ter tags duplicadas)
+ * 2. Busca em O(1), mais eficiente que ArrayList (O(n))
+ * 3. Não preciso manter ordem específica das tags
  */
 
-
+/** updateStatus
+ * Atualiza o status e mantém a consistência com o campo completed.
+ * Centralizei este comportamento para garantir que ambos os campos
+ * permaneçam sincronizados.
+ */

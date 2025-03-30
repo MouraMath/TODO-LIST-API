@@ -1,4 +1,4 @@
 package com.mouramath.todolistapi.domain.repository;
 
-public interface TodoRepository {
+public interface TaskRepository {
 }
