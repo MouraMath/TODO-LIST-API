@@ -34,6 +34,7 @@ dependencies {
 
     // GraphQL
     implementation("org.springframework.boot:spring-boot-starter-graphql")
+    implementation("com.graphql-java:graphql-java-extended-scalars:20.0")
 
 
     // implementation("org.springframework.boot:spring-boot-starter-data-mongodb")

@@ -1,0 +1,51 @@
+scalar DateTime
+
+type Task {
+    id: ID!
+    title: String!
+    description: String
+    status: TaskStatus!
+    completed: Boolean!
+    createdAt: DateTime
+    updatedAt: DateTime
+    completedAt: DateTime
+    tags: [String]
+}
+
+enum TaskStatus {
+    BACKLOG
+    IN_PROGRESS
+    AWAITING_REVIEW
+    COMPLETED
+}
+
+input CreateTaskInput {
+    title: String!
+    description: String
+    tags: [String]
+}
+
+input UpdateTaskInput {
+    title: String
+    description: String
+    tags: [String]
+}
+
+input UpdateStatusInput {
+    status: TaskStatus!
+}
+
+type Query {
+    taskById(id: ID!): Task
+    allTasks: [Task]
+    tasksByStatus(status: TaskStatus): [Task]
+    completedTasks: [Task]
+    pendingTasks: [Task]
+}
+
+type Mutation {
+    createTask(input: CreateTaskInput!): Task!
+    updateTask(id: ID!, input: UpdateTaskInput!): Task
+    updateTaskStatus(id: ID!, input: UpdateStatusInput!): Task
+    deleteTask(id: ID!): Boolean
+}
