@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamodb
+    ports:
+      - "8000:8000"
+    volumes:
+      - dynamodb_data:/home/dynamodblocal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  app:
+    build: .
+    container_name: todo-api
+    ports:
+      - "8080:8080"
+    environment:
+      - AWS_ACCESS_KEY_ID=fake
+      - AWS_SECRET_ACCESS_KEY=fake
+      - AWS_REGION=sa-east-1
+      - DYNAMODB_ENDPOINT=http://dynamodb:8000
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+
+volumes:
+  dynamodb_data:
