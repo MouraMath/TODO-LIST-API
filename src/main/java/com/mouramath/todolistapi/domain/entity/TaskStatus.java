@@ -8,24 +8,21 @@ public enum TaskStatus {
     AWAITING_REVIEW,
     COMPLETED;
 
-    public static boolean isCompleted(TaskStatus status) {
-        return status == COMPLETED;
+    public boolean isCompleted() {
+        return this == COMPLETED;
     }
 
 
 
 }
 
-/*
- * Representa os possíveis estados de uma tarefa no sistema.
- * Uso enum para fornecer uma tipagem forte e prevenir valores inválidos,
- * enquanto mantenho a possibilidade de adicionar novos estados no futuro.
+/**
+ * Enum que representa os possíveis estados de uma tarefa no sistema.
+ * Uso enumeração para garantir valores consistentes e possibilitar futuras extensões.
+ *
+ * A combinação de enum com boolean completed permite:
+ * 1. Representação rica dos estados de workflow (mais que apenas "feito/não feito")
+ * 2. Consultas eficientes quando precisamos apenas saber se está completo ou não
+ * 3. Flexibilidade para adicionar novos estados sem mudar a estrutura principal
  */
 
-/**
- * Converte o valor do enum para o valor do boolean completed.
- * Útil para mapeamentos e consultas onde precisamos do valor booleano.
- *
- * @param status O status a ser verificado
- * @return true se o status for COMPLETED, false caso contrário
- */

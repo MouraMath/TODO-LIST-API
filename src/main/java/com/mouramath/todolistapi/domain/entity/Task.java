@@ -5,16 +5,17 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConvertedEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.UUID;
+
 
 @Data
 @Builder
@@ -58,7 +59,7 @@ public class Task {
 
     public void updateStatus(TaskStatus newStatus){
         this.status = newStatus;
-        this.completed = TaskStatus.isCompleted(); //TODO conferir isCompleted
+        this.completed = newStatus.isCompleted();
         this.updated_at = LocalDateTime.now();
 
         if(newStatus == TaskStatus.COMPLETED && completedAt == null){
@@ -67,6 +68,20 @@ public class Task {
             this.completedAt = null;
         }
 
+    }
+
+    public static Task createNew(String title, String description, String userId){
+        return Task.builder()
+                .id(UUID.randomUUID().toString())
+                .userId(userId)
+                .title(title)
+                .description(description)
+                .tags(new HashSet<>())
+                .status(TaskStatus.BACKLOG)
+                .completed(false)
+                .created_at(LocalDateTime.now())
+                .updated_at(LocalDateTime.now())
+                .build();
     }
 
 }
