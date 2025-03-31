@@ -6,9 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * Modelo padronizado para respostas de erro.
- */
 @Getter
 @AllArgsConstructor
 public class ErrorResponse {
