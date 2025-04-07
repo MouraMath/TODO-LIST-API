@@ -56,6 +56,9 @@ public class Task {
     @DynamoDBAttribute
     private LocalDateTime completedAt;
 
+    @DynamoDBAttribute
+    private LocalDateTime dueDate;
+
 
     public void updateStatus(TaskStatus newStatus){
         this.status = newStatus;
@@ -83,6 +86,7 @@ public class Task {
                 .updated_at(LocalDateTime.now())
                 .build();
     }
+
 
 }
 

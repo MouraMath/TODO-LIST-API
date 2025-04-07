@@ -1,11 +1,13 @@
 package com.mouramath.todolistapi.domain.repository;
 
 import com.mouramath.todolistapi.domain.entity.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.List;
 
+@Repository
 public interface UserRepository {
 
     User save(User user);
